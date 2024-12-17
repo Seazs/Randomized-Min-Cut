@@ -116,9 +116,11 @@ class Graph:
         print("°°°")
         print(self.V)
         print(self.E)
-        print(self.edges)
+        print(self.edges_copy)
         for r in range(1, self.E + 1):
-            for edges_subset in itertools.combinations(self.edges, r):
+            print("EDGES ------ " + str(r))
+            for edges_subset in itertools.combinations(set(self.edges_copy), r):
+                #print(edges_subset)
                 if not self.is_connected(edges_subset):
                     if len(edges_subset) < min_cut:
                         min_cut = len(edges_subset)
@@ -128,12 +130,20 @@ class Graph:
         return min_cut_edges
     
     def contract_to_size(self, H, t):
+        print("CONTRACT TO SIZE")
+        print(H.V)
+        print(H.edges)
         while H.V > t:
-            edge = random.choice(H.edges)
+            print(H.V)
+            print(H.edges)
+            edge = random.choice(H.edges_copy)
             H.contract_edge(edge.u, edge.v)
+        print(H.V)
+        print(H.edges)
         return H
     
     def fast_cut_algorithm(self):
+        #self.edges_copy = copy.deepcopy(self.edges)
         n = self.V
         if n <= 6:
             return self.brutforce()
@@ -142,6 +152,16 @@ class Graph:
 
         H1 = copy.deepcopy(self)
         H2 = copy.deepcopy(self)
+        
+        H1.contract_to_size(H1, t)
+        H2.contract_to_size(H2, t)
+        
+        
+        H1_min_cut_edges = H1.fast_cut_algorithm()
+        H2_min_cut_edges = H2.fast_cut_algorithm()
+        
+        min_cut_edges = H1_min_cut_edges if len(H1_min_cut_edges) < len(H2_min_cut_edges) else H2_min_cut_edges
+        return min_cut_edges
 
         
 
