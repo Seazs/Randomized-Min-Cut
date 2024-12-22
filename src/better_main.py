@@ -109,6 +109,49 @@ def compare_algorithms(graph):
     print(contract_times)
     print(fast_cut_times)
     plot_results(sizes, contract_times, fast_cut_times)
+    
+    
+    
+def compare_success_rate(graph, min_cut, n_test):
+    time_budgets = [10**(i/3) for i in range(-7, 3)]
+    contract_success_rates = []
+    fast_cut_success_rates = []
+
+    def run_trials(algo):
+        success_count = 0
+        for _ in range(n_test):
+            min_cut_found = graph.E
+            start = time.time()
+            while time.time() - start < time_budget:
+                min_cut_found = min(min_cut_found, algo())
+                graph.reset_graph()
+            if min_cut_found == min_cut:
+                success_count += 1
+        return success_count / n_test
+
+    for time_budget in time_budgets:
+        print(f"time budget: {time_budget}")
+        contract_success_rates.append(run_trials(graph.contract_algorithm))
+        fast_cut_success_rates.append(run_trials(graph.fast_cut_algorithm))
+
+    print(time_budgets)
+    print(contract_success_rates)
+    print(fast_cut_success_rates)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(time_budgets, contract_success_rates, label='Contract Algorithm Success Rate', marker='o')
+    plt.plot(time_budgets, fast_cut_success_rates, label='Fast Cut Algorithm Success Rate', marker='o')
+    plt.xlabel('Time Budget (s)')
+    plt.ylabel('Success Rate')
+    plt.title('Algorithm Success Rate Comparison')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    
+    
+                
+            
         
         
 
@@ -123,15 +166,16 @@ def compare_algorithms(graph):
 
 if __name__ == "__main__":
     
-    n = 15
-    m = (3/4)*(n*(n-1)/2) - 1
+    n = 30
+    m = (4/4)*(n*(n-1)/2) - 1
     num_trials = n * (n - 1) * int(math.log(n))
     #num_trials = 100
-    n_test = 500
+    n_test = 20
 
     print(f"n: {n}, m: {m}, num_trials: {num_trials}")
 
-    graph = Graph("star", n)
+    graph = Graph("random", V=n, E=m)
+    #graph.load_graph("./data/word_adjacencies.txt")
     
     graph.create_graph_png("./output/initial_graph.png")
     
@@ -143,8 +187,9 @@ if __name__ == "__main__":
     # print("theorical error probability for contract algo : " + str(compute_theorical_error_probability_contract(n)))
     # print("theorical error probability for fast cut algo : " + str(compute_theorical_error_probability_fast_cut(n)))
     
-    # print("empirical success probability for contract algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "contract")))
-    # print("empirical success probability for fast cut algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "fast_cut")))
+    #print("empirical success probability for contract algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "contract")))
+    #print("empirical success probability for fast cut algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "fast_cut")))
         
 
-    compare_algorithms(graph)
+    #compare_algorithms(graph)
+    compare_success_rate(graph, len(min_cut), n_test)

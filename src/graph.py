@@ -5,6 +5,8 @@ import pygraphviz as pgv
 import math
 import networkx as nx
 
+from functools import lru_cache
+
 
 class Graph:
     def __init__(self, graph_type="random", V=10, E=20):
@@ -95,7 +97,8 @@ class Graph:
                 min_cut = cut_edges
         
         return min_cut
-            
+    
+    #@lru_cache(None)
     def fast_cut_algorithm(self):
         
         if self.V <= 6:
