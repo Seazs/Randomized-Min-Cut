@@ -113,7 +113,7 @@ def compare_algorithms(graph):
     
     
 def compare_success_rate(graph, min_cut, n_test):
-    time_budgets = [10**(i/3) for i in range(-7, 3)]
+    time_budgets = [10**(i/3) for i in range(-13, -3)]
     contract_success_rates = []
     fast_cut_success_rates = []
 
@@ -141,6 +141,7 @@ def compare_success_rate(graph, min_cut, n_test):
     plt.figure(figsize=(10, 6))
     plt.plot(time_budgets, contract_success_rates, label='Contract Algorithm Success Rate', marker='o')
     plt.plot(time_budgets, fast_cut_success_rates, label='Fast Cut Algorithm Success Rate', marker='o')
+    plt.xscale('log')
     plt.xlabel('Time Budget (s)')
     plt.ylabel('Success Rate')
     plt.title('Algorithm Success Rate Comparison')
