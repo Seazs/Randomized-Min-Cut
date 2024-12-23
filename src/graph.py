@@ -19,6 +19,12 @@ class Graph:
             self.create_cycle_graph(V)
         elif graph_type == "star":
             self.create_star_graph(V)
+        elif graph_type == "erdos_renyi":
+            self.create_erdos_renyi_graph(V)
+        elif graph_type == "barabasi_albert":
+            self.create_barabasi_albert_graph(V)
+        elif graph_type == "watts_strogatz":
+            self.create_watts_strogatz_graph(V)
         
     
     def init(self):
@@ -104,8 +110,11 @@ class Graph:
         if self.V <= 6:
             return self.brute_force_cut()
         
-        H1 = copy.deepcopy(self)
-        H2 = copy.deepcopy(self)
+        H1 = Graph()
+        H2 = Graph()    
+        H1.edges = list(self.edges)
+        H2.edges = list(self.edges)
+            
         
         t = math.ceil(1+ self.V / math.sqrt(2))
         
@@ -152,9 +161,28 @@ class Graph:
             self.add_edge(0, u)
         self.remember_edges()
     
+    def create_erdos_renyi_graph(self, V):
+        G = nx.erdos_renyi_graph(n=V, p=0.2)
+        self.edges = list(G.edges)
+        self.remember_edges()
+    
+    def create_barabasi_albert_graph(self, V):
+        G = nx.barabasi_albert_graph(n=V, m=2, seed=42)
+        self.edges = list(G.edges)
+        self.remember_edges()
+    
+    def create_watts_strogatz_graph(self, V):
+        G = nx.watts_strogatz_graph(n=V, k=4, p=0.1)
+        self.edges = list(G.edges)
+        self.remember_edges()
+    
         
     def create_graph_png(self, filename):
         G = pgv.AGraph(strict=False, directed=False)
         for edge in self.edges:
             G.add_edge(*edge)
         G.draw(filename, prog="dot", format="png")
+    
+
+    
+
