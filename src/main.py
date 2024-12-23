@@ -130,7 +130,22 @@ def test_compare_algorithms():
     
     
 def compare_success_rate(graph, min_cut, n_test):
-    time_budgets = [10**(i/3) for i in range(-13, -3)]
+    
+    # compute the time take by 1 execution of the contract algorithm
+    start = time.time()
+    graph.contract_algorithm()
+    contract_time = time.time() - start
+    graph.reset_graph()
+    
+    # compute the time take by 1 execution of the fast cut algorithm
+    start = time.time()
+    graph.fast_cut_algorithm()
+    fast_cut_time = time.time() - start
+    graph.reset_graph()
+    
+    
+    
+    time_budgets = [10**(i/3) for i in range(-13, 0)]
     contract_success_rates = []
     fast_cut_success_rates = []
 
@@ -144,7 +159,7 @@ def compare_success_rate(graph, min_cut, n_test):
                 run_count += 1
                 min_cut_found = min(min_cut_found, algo())
                 graph.reset_graph()
-            print(f"run count: {run_count}")
+            print("time taken : " + str(time.time() - start))
             if min_cut_found == min_cut:
                 success_count += 1
         return success_count / n_test
@@ -161,6 +176,8 @@ def compare_success_rate(graph, min_cut, n_test):
     plt.figure(figsize=(10, 6))
     plt.plot(time_budgets, contract_success_rates, label='Contract Algorithm Success Rate', marker='o')
     plt.plot(time_budgets, fast_cut_success_rates, label='Fast Cut Algorithm Success Rate', marker='o')
+    plt.axvline(x=contract_time, color='r', linestyle='--', label='Contract Algorithm Execution Time')
+    plt.axvline(x=fast_cut_time, color='b', linestyle='--', label='Fast Cut Algorithm Execution Time')
     plt.xscale('log')
     plt.xlabel('Time Budget (s)')
     plt.ylabel('Success Rate')
@@ -239,11 +256,11 @@ def compare_algorithms(graph):
 
 if __name__ == "__main__":
     
-    n = 100
-    m = (2/4)*(n*(n-1)/2) - 1
+    n = 40
+    m = (1/8)*(n*(n-1)/2) - 1
     #num_trials = n * (n - 1) * int(math.log(n))
     num_trials = 100
-    n_test = 40
+    n_test = 20
 
     print(f"n: {n}, m: {m}, num_trials: {num_trials}")
 
@@ -260,12 +277,12 @@ if __name__ == "__main__":
     
     
     # print("theorical success probability for contract algo : " + str(compute_theorical_success_probability_contract(n)))
-    print("theorical sucess probability for fast cut algo : " + str(compute_theorical_success_probability_fast_cut(n)))
+    #print("theorical sucess probability for fast cut algo : " + str(compute_theorical_success_probability_fast_cut(n)))
     
     # print("empirical success probability for contract algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "contract")))
-    print("empirical success probability for fast cut algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "fast_cut")))
+    #print("empirical success probability for fast cut algo : " + str(compute_empirical_success_probability(graph, n_test, len(min_cut), algo = "fast_cut")))
         
     #test_fast_cut_success_rate(graph, len(min_cut))
 
     #compare_algorithms(graph)
-    #compare_success_rate(graph, len(min_cut), n_test)
+    compare_success_rate(graph, len(min_cut), n_test)

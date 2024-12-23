@@ -5,6 +5,7 @@ import pygraphviz as pgv
 import math
 import networkx as nx
 
+
 from functools import lru_cache
 
 
@@ -104,8 +105,8 @@ class Graph:
         
         return min_cut
     
-    #@lru_cache(None)
     def fast_cut_algorithm(self):
+        
         
         if self.V <= 6:
             return self.brute_force_cut()
@@ -162,7 +163,7 @@ class Graph:
         self.remember_edges()
     
     def create_erdos_renyi_graph(self, V):
-        G = nx.erdos_renyi_graph(n=V, p=0.2)
+        G = nx.erdos_renyi_graph(n=V, p=0.5)
         self.edges = list(G.edges)
         self.remember_edges()
     
